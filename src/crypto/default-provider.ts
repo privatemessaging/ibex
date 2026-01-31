@@ -44,12 +44,15 @@ export class DefaultCryptoProvider implements CryptoProvider {
     const personalBytes = padString(personal, 16);
     const saltBytes = padString(salt, 16);
 
-    return blake2b(data, {
+    const result = blake2b(data, {
       dkLen: 32,
       key: key ?? undefined,
       personalization: personalBytes,
       salt: saltBytes,
     });
+    // Wrap in canonical Uint8Array to ensure compatibility with tweetnacl's
+    // strict instanceof checks (noble-hashes may return a subclass)
+    return new Uint8Array(result);
   }
 
   async blake2b512(
@@ -61,12 +64,13 @@ export class DefaultCryptoProvider implements CryptoProvider {
     const personalBytes = padString(personal, 16);
     const saltBytes = padString(salt, 16);
 
-    return blake2b(data, {
+    const result = blake2b(data, {
       dkLen: 64,
       key: key ?? undefined,
       personalization: personalBytes,
       salt: saltBytes,
     });
+    return new Uint8Array(result);
   }
 
   async symmetricEncrypt(

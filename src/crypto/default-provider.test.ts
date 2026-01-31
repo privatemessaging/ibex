@@ -95,6 +95,32 @@ describe('DefaultCryptoProvider', () => {
     });
   });
 
+  describe('blake2b output compatibility with tweetnacl', () => {
+    it('should work with blake2b256-derived keys in symmetricEncrypt', async () => {
+      // blake2b256 produces 32-byte output, perfect for symmetric keys
+      const key = await crypto.blake2b256(null, '', '', new Uint8Array(32));
+      const nonce = new Uint8Array(CryptoConstants.NONCE_BYTES);
+      const data = new TextEncoder().encode('test');
+
+      // This will fail if blake2b returns non-canonical Uint8Array
+      // because tweetnacl uses strict instanceof checks
+      const encrypted = await crypto.symmetricEncrypt(data, key, nonce);
+      expect(encrypted.length).toBeGreaterThan(data.length);
+    });
+
+    it('should return canonical Uint8Array from blake2b256', async () => {
+      const hash = await crypto.blake2b256(null, '', '', new Uint8Array(32));
+      expect(hash.constructor).toBe(Uint8Array);
+      expect(Object.getPrototypeOf(hash)).toBe(Uint8Array.prototype);
+    });
+
+    it('should return canonical Uint8Array from blake2b512', async () => {
+      const hash = await crypto.blake2b512(null, '', '', new Uint8Array(32));
+      expect(hash.constructor).toBe(Uint8Array);
+      expect(Object.getPrototypeOf(hash)).toBe(Uint8Array.prototype);
+    });
+  });
+
   describe('symmetricEncrypt/symmetricDecrypt', () => {
     it('should encrypt and decrypt data', async () => {
       const key = new Uint8Array(CryptoConstants.SYMMETRIC_KEY_BYTES).fill(0x42);
