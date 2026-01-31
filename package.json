@@ -1,0 +1,63 @@
+{
+  "name": "@privatemessaging/ibex",
+  "version": "0.1.0",
+  "description": "Non-opinionated implementation of the Threema Ibex forward secrecy protocol",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./crypto": {
+      "types": "./dist/crypto/default-provider.d.ts",
+      "import": "./dist/crypto/default-provider.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "cryptography",
+    "forward-secrecy",
+    "ibex",
+    "threema",
+    "e2e-encryption",
+    "key-exchange"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "@noble/hashes": "^2.0.0",
+    "tweetnacl": "^1.0.3"
+  },
+  "peerDependenciesMeta": {
+    "@noble/hashes": {
+      "optional": true
+    },
+    "tweetnacl": {
+      "optional": true
+    }
+  },
+  "optionalDependencies": {
+    "@noble/hashes": "^2.0.1",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
