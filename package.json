@@ -1,6 +1,6 @@
 {
   "name": "@privatemessaging/ibex",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Non-opinionated implementation of the Threema Ibex forward secrecy protocol",
   "type": "module",
   "main": "dist/index.js",
