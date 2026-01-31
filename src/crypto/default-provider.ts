@@ -1,26 +1,6 @@
 import type { CryptoProvider, KeyPair } from '../types/crypto.js';
-
-// Dynamic imports with error handling for optional dependencies
-let nacl: typeof import('tweetnacl');
-let blake2b: typeof import('@noble/hashes/blake2.js').blake2b;
-
-try {
-  nacl = (await import('tweetnacl')).default;
-} catch {
-  throw new Error(
-    'DefaultCryptoProvider requires "tweetnacl" package. ' +
-    'Install it with: npm install tweetnacl'
-  );
-}
-
-try {
-  blake2b = (await import('@noble/hashes/blake2.js')).blake2b;
-} catch {
-  throw new Error(
-    'DefaultCryptoProvider requires "@noble/hashes" package. ' +
-    'Install it with: npm install @noble/hashes'
-  );
-}
+import nacl from 'tweetnacl';
+import { blake2b } from '@noble/hashes/blake2.js';
 
 /**
  * Pad or truncate a string to exactly `length` bytes
