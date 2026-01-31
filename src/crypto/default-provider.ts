@@ -31,7 +31,8 @@ export class DefaultCryptoProvider implements CryptoProvider {
 
   async x25519(privateKey: Uint8Array, publicKey: Uint8Array): Promise<Uint8Array> {
     // tweetnacl's scalarMult performs X25519
-    return nacl.scalarMult(privateKey, publicKey);
+    // Wrap inputs in canonical Uint8Array for bundler compatibility
+    return nacl.scalarMult(new Uint8Array(privateKey), new Uint8Array(publicKey));
   }
 
   async blake2b256(
@@ -44,14 +45,13 @@ export class DefaultCryptoProvider implements CryptoProvider {
     const personalBytes = padString(personal, 16);
     const saltBytes = padString(salt, 16);
 
-    const result = blake2b(data, {
+    // Wrap inputs/outputs in canonical Uint8Array for bundler compatibility
+    const result = blake2b(new Uint8Array(data), {
       dkLen: 32,
-      key: key ?? undefined,
+      key: key ? new Uint8Array(key) : undefined,
       personalization: personalBytes,
       salt: saltBytes,
     });
-    // Wrap in canonical Uint8Array to ensure compatibility with tweetnacl's
-    // strict instanceof checks (noble-hashes may return a subclass)
     return new Uint8Array(result);
   }
 
@@ -64,9 +64,9 @@ export class DefaultCryptoProvider implements CryptoProvider {
     const personalBytes = padString(personal, 16);
     const saltBytes = padString(salt, 16);
 
-    const result = blake2b(data, {
+    const result = blake2b(new Uint8Array(data), {
       dkLen: 64,
-      key: key ?? undefined,
+      key: key ? new Uint8Array(key) : undefined,
       personalization: personalBytes,
       salt: saltBytes,
     });
@@ -78,7 +78,11 @@ export class DefaultCryptoProvider implements CryptoProvider {
     key: Uint8Array,
     nonce: Uint8Array
   ): Promise<Uint8Array> {
-    return nacl.secretbox(data, nonce, key);
+    return nacl.secretbox(
+      new Uint8Array(data),
+      new Uint8Array(nonce),
+      new Uint8Array(key)
+    );
   }
 
   async symmetricDecrypt(
@@ -86,7 +90,11 @@ export class DefaultCryptoProvider implements CryptoProvider {
     key: Uint8Array,
     nonce: Uint8Array
   ): Promise<Uint8Array> {
-    const result = nacl.secretbox.open(data, nonce, key);
+    const result = nacl.secretbox.open(
+      new Uint8Array(data),
+      new Uint8Array(nonce),
+      new Uint8Array(key)
+    );
     if (result === null) {
       throw new Error('Decryption failed: authentication tag mismatch');
     }
